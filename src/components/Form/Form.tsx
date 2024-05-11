@@ -15,6 +15,7 @@ function Form(){
     const [password, setPassword] = useState<string>("");
     const [showData, setShowData] = useState<boolean>(false);
     const [user, setUser] = useState<any>(null);
+    const [album, setAlbum] = useState<any>(null);
 
     useEffect(() => {
         const userInStorageString = window.localStorage.getItem("user");
@@ -23,6 +24,8 @@ function Form(){
             setUser(userInStorage);
             console.log(userInStorage);
         }
+
+       
     }, [])
 
     
@@ -44,19 +47,6 @@ function Form(){
 
         fetchCategory();
 
-        // if(!showData){
-            //     if(email === loginData.email && password === loginData.password){
-        //         setShowData(true);
-        //     }
-        //     else{
-            //         alert("Credenciales incorrectas.");
-            //     }
-            
-            // }
-            // else{
-                //     setShowData(!showData)
-            
-        // }
         
     }
 
@@ -99,6 +89,7 @@ function Form(){
             const data = await response.json();
 
             console.log(data);
+            setAlbum(data);
 
         } catch (error) {
             console.log(error);
@@ -122,6 +113,34 @@ function Form(){
                     </section>
                 )
             }
+
+            {
+                album && (
+                        <section className="movieContainer">
+                        <h2>Albums</h2>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Artista</th>
+                                <th>Año de lanzamiento</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {album.map((album: any) => (
+                                <tr key={album.name}>
+                                <td>{album.name}</td>
+                                <td>{album.artist}</td>
+                                <td>{album.release_year}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                        </section>
+            
+            )}
+
+            
             
             <section className='dataContainer'>
                 {showData && (
