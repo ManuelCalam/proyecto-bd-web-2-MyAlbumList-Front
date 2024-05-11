@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import './Form.css';
 
 const API_URL = "http://localhost:3010/";
@@ -16,11 +16,19 @@ function Form(){
     const [showData, setShowData] = useState<boolean>(false);
     const [user, setUser] = useState<any>(null);
 
-    // const handleInputChange = (stateUpdate) => {
-    //     return (event) => {
-    //         stateUpdate(event.target.value);
-    //     }
-    // }
+    useEffect(() => {
+        const userInStorageString = window.localStorage.getItem("user");
+        if(userInStorageString){
+            const userInStorage = JSON.parse(userInStorageString);
+            setUser(userInStorage);
+            console.log(userInStorage);
+        }
+    }, [])
+
+    
+    
+
+  
 
     const handleOnEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
         setEmail(event.target.value);
@@ -32,19 +40,21 @@ function Form(){
     }
 
     const handleOnClick = () =>{
-        logIn({email, password});
+        // logIn({email, password});
+
+        fetchCategory();
 
         // if(!showData){
-        //     if(email === loginData.email && password === loginData.password){
+            //     if(email === loginData.email && password === loginData.password){
         //         setShowData(true);
         //     }
         //     else{
-        //         alert("Credenciales incorrectas.");
-        //     }
-
-        // }
-        // else{
-        //     setShowData(!showData)
+            //         alert("Credenciales incorrectas.");
+            //     }
+            
+            // }
+            // else{
+                //     setShowData(!showData)
             
         // }
         
@@ -64,21 +74,55 @@ function Form(){
                 const data = await response.json();
                 console.log(data);
                 setUser(data);
+
+                window.localStorage.setItem("user", JSON.stringify(data));
             }else{
                 alert("Usuario o contraseña incorrectos");
 
             }
-
-    
-    
+            
+            
+            
         } catch(error){
             console.log(error);
         }
-    
+        
     }
 
+    const fetchCategory = async () => {
+        try {
+            const response = await fetch(`${API_URL}api/v1/albums`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }            
+            });
+            const data = await response.json();
+
+            console.log(data);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
     return (
         <>
+            {
+                user && (
+                    <section className='dataContainer'>
+                        {
+                            
+                                <>
+                                    <p>Email: {user.user.email}</p>
+                                    <p>Nombre: {user.user.name}</p>
+                                    <p>Id: {user.user.id}</p>
+                                </>
+                            
+                        }
+                    </section>
+                )
+            }
+            
             <section className='dataContainer'>
                 {showData && (
                         <p>Bienvenido: {email}</p>   
